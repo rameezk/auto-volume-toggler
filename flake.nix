@@ -36,26 +36,31 @@
         };
       };
 
-      auto-volume-toggler = pkgs.writeShellApplication {
-        name = "auto-volume-toggler";
-        runtimeInputs = [ mac-volume ];
-        text = builtins.readFile ./auto-volume-toggler.sh;
-      };
+      auto-volume-toggler = { targetVolume ? 50, deviceName ? "MacBook Pro Speakers" }:
+        pkgs.writeShellApplication {
+          name = "auto-volume-toggler";
+          runtimeInputs = [ mac-volume ];
+          text = ''
+            TARGET_VOLUME=${toString targetVolume}
+            DEVICE_NAME="${deviceName}"
+            ${builtins.readFile ./auto-volume-toggler.sh}
+          '';
+        };
 
     in
     {
       packages.${system} = {
         inherit mac-volume auto-volume-toggler;
-        default = auto-volume-toggler;
+        default = auto-volume-toggler {};
       };
 
       apps.${system}.default = {
         type = "app";
-        program = "${auto-volume-toggler}/bin/auto-volume-toggler";
+        program = "${auto-volume-toggler {}}/bin/auto-volume-toggler";
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        buildInputs = [ mac-volume auto-volume-toggler ];
+        buildInputs = [ mac-volume (auto-volume-toggler {}) ];
         shellHook = ''
           echo "Auto Volume Toggler"
           echo "==================="

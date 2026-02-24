@@ -1,6 +1,3 @@
-TARGET_VOLUME=50
-DEVICE_NAME="MacBook Pro Speakers"
-
 is_audio_playing() {
     local assertions
     assertions=$(pmset -g assertions 2>/dev/null)
