@@ -1,7 +1,7 @@
 is_audio_playing() {
-    local assertions
-    assertions=$(pmset -g assertions 2>/dev/null)
-    echo "$assertions" | grep -q "coreaudiod.*PreventUserIdleSystemSleep"
+    local playing
+    playing=$(media-control get 2>/dev/null | jq -r '.playing // false')
+    [ "$playing" = "true" ]
 }
 
 if is_audio_playing; then

@@ -10,6 +10,35 @@
       system = "aarch64-darwin";
       pkgs = nixpkgs.legacyPackages.${system};
 
+      media-control = pkgs.stdenv.mkDerivation {
+        pname = "media-control";
+        version = "0.7.2";
+
+        src = pkgs.fetchFromGitHub {
+          owner = "ungive";
+          repo = "media-control";
+          rev = "v0.7.2";
+          sha256 = "sha256-GvdgkW3Jux5oEqj+UfgUyk/Xj8fcAWo9ZmaNDIR6vzY=";
+          fetchSubmodules = true;
+        };
+
+        nativeBuildInputs = [
+          pkgs.cmake
+          (pkgs.writeShellScriptBin "codesign" "exit 0")
+        ];
+
+        buildInputs = [
+          pkgs.apple-sdk
+        ];
+
+        meta = with pkgs.lib; {
+          description = "Control and observe media playback from the command line";
+          homepage = "https://github.com/ungive/media-control";
+          license = licenses.bsd3;
+          platforms = [ "aarch64-darwin" "x86_64-darwin" ];
+        };
+      };
+
       mac-volume = pkgs.stdenv.mkDerivation {
         pname = "mac-volume";
         version = "1.0.0";
@@ -39,7 +68,7 @@
       auto-volume-toggler = { targetVolume ? 50, deviceName ? "MacBook Pro Speakers" }:
         pkgs.writeShellApplication {
           name = "auto-volume-toggler";
-          runtimeInputs = [ mac-volume ];
+          runtimeInputs = [ mac-volume media-control pkgs.jq ];
           text = ''
             TARGET_VOLUME=${toString targetVolume}
             DEVICE_NAME="${deviceName}"
@@ -50,7 +79,7 @@
     in
     {
       packages.${system} = {
-        inherit mac-volume auto-volume-toggler;
+        inherit mac-volume media-control auto-volume-toggler;
         default = auto-volume-toggler {};
       };
 
