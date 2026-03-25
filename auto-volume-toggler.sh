@@ -15,9 +15,18 @@ if [ -z "$current_volume" ]; then
     exit 1
 fi
 
-if [ "$current_volume" -ne "$TARGET_VOLUME" ]; then
-    mac-volume "$DEVICE_NAME" set "$TARGET_VOLUME"
-    echo "Volume adjusted: $current_volume -> $TARGET_VOLUME"
+if [ "$ONLY_DECREASE" = "true" ]; then
+    if [ "$current_volume" -gt "$TARGET_VOLUME" ]; then
+        mac-volume "$DEVICE_NAME" set "$TARGET_VOLUME"
+        echo "Volume adjusted: $current_volume -> $TARGET_VOLUME"
+    else
+        echo "Volume at $current_volume (at or below target $TARGET_VOLUME) - skipping"
+    fi
 else
-    echo "Volume already at $TARGET_VOLUME"
+    if [ "$current_volume" -ne "$TARGET_VOLUME" ]; then
+        mac-volume "$DEVICE_NAME" set "$TARGET_VOLUME"
+        echo "Volume adjusted: $current_volume -> $TARGET_VOLUME"
+    else
+        echo "Volume already at $TARGET_VOLUME"
+    fi
 fi

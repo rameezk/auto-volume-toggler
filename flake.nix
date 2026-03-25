@@ -65,13 +65,14 @@
         };
       };
 
-      auto-volume-toggler = { targetVolume ? 50, deviceName ? "MacBook Pro Speakers" }:
+      auto-volume-toggler = { targetVolume ? 50, deviceName ? "MacBook Pro Speakers", onlyDecrease ? false }:
         pkgs.writeShellApplication {
           name = "auto-volume-toggler";
           runtimeInputs = [ mac-volume media-control pkgs.jq ];
           text = ''
             TARGET_VOLUME=${toString targetVolume}
             DEVICE_NAME="${deviceName}"
+            ONLY_DECREASE=${if onlyDecrease then "true" else "false"}
             ${builtins.readFile ./auto-volume-toggler.sh}
           '';
         };
