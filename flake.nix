@@ -24,12 +24,15 @@
 
         nativeBuildInputs = [
           pkgs.cmake
+          pkgs.lld
           (pkgs.writeShellScriptBin "codesign" "exit 0")
         ];
 
         buildInputs = [
           pkgs.apple-sdk
         ];
+
+        env.NIX_CFLAGS_COMPILE = "-fuse-ld=lld";
 
         meta = with pkgs.lib; {
           description = "Control and observe media playback from the command line";
